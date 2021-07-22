@@ -1,18 +1,17 @@
--- Should entries contain usernames? Or just userIDs?
+CREATE TABLE IF NOT EXISTS accounts (
+    user_id serial PRIMARY KEY,
+    username varchar ( 50 ) UNIQUE NOT NULL,
+    password varchar ( 50 ) NOT NULL,
+    email varchar ( 255 ) UNIQUE NOT NULL,
+    created_on TIMESTAMP NOT NULL,
+    last_login TIMESTAMP
+);
 
-CREATE TABLE public.entries
-(
-    id integer NOT NULL DEFAULT nextval('entries_id_seq'::regclass),
-    text character varying(200) COLLATE pg_catalog."default" NOT NULL,
-    date date NOT NULL,
-    "userID" character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    username character varying(100) COLLATE pg_catalog."default",
-    CONSTRAINT entries_pkey PRIMARY KEY (id)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE public.entries
-    OWNER to postgres;
-
-GRANT ALL ON TABLE public.entries TO postgres;
+CREATE TABLE IF NOT EXISTS entries (
+     entry_id serial PRIMARY KEY,
+     user_id INT NOT NULL,
+     text character varying(200) NOT NULL,
+     date date NOT NULL,
+     FOREIGN KEY (user_id)
+         REFERENCES accounts (user_id)
+);

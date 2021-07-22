@@ -14,11 +14,11 @@ const pool = new Pool({
 });
 
 const queries = {
-  getAllUserEntries: prep("SELECT * FROM public.entries WHERE \"userID\" = ${userID} ORDER BY id ASC"),
-  postEntry: prep("INSERT INTO public.entries(text, date, \"userID\") VALUES (${text}, ${date}, ${userID})"),
-  getEntriesBetweenDates: prep("SELECT * FROM public.entries WHERE \"userID\" = ${userID} AND date BETWEEN ${startDate} AND ${endDate}"),
-  getEntryByDate: prep("SELECT * FROM public.entries WHERE  \"userID\" = ${userID} AND date = ${date}"),
-  deleteEntryByDate: prep("DELETE FROM public.entries WHERE \"userID\" = ${userID} AND date = ${date}")
+  getAllUserEntries: prep("SELECT * FROM public.entries WHERE user_id = ${userID} ORDER BY entry_id ASC"),
+  postEntry: prep("INSERT INTO public.entries(user_id, text, date) VALUES (${userID}, ${text}, ${date})"),
+  getEntriesBetweenDates: prep("SELECT * FROM public.entries WHERE user_id = ${userID} AND date BETWEEN ${startDate} AND ${endDate}"),
+  getEntryByDate: prep("SELECT * FROM public.entries WHERE  user_id = ${userID} AND date = ${date}"),
+  deleteEntryByDate: prep("DELETE FROM public.entries WHERE user_id = ${userID} AND date = ${date}")
 };
 
 const postEntry = (request, response) => {
@@ -36,7 +36,7 @@ const postEntry = (request, response) => {
 }
 
 const getAllUserEntries = (request, response) => {
-  pool.query(queries.getAllUserEntries({"userID": request.body.userID}), (error, results) => {
+  pool.query(queries.getAllUserEntries({userID: request.body.userID}), (error, results) => {
     if (error) {
       throw error;
     }
