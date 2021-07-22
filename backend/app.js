@@ -9,7 +9,7 @@ app.use(cors());
 const db = require('./queries')
 
 app.use(express.json());
-console.log(process.env.DB_PASS)
+
 app.get('/', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })
 });
@@ -18,4 +18,13 @@ app.listen(port, () => {
     console.log(`App running on port ${port}.`)
 });
 
-app.get('/getall', db.getAllEntries);
+app.get('/getAllUserEntries', db.getAllUserEntries);
+
+app.post('/postEntry', db.postEntry);
+
+app.get('/getEntryByDate', db.getEntryByDate);
+
+app.get('/getEntriesBetweenDates', db.getEntriesBetweenDates);
+
+app.delete('/deleteEntryByDate', db.deleteEntryByDate);
+

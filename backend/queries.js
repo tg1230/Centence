@@ -14,11 +14,29 @@ const pool = new Pool({
 });
 
 const queries = {
-  getAll: prep("SELECT * FROM public.entries ORDER BY id ASC"),
+  getAllUserEntries: prep("SELECT * FROM public.entries WHERE \"userID\" = ${userID} ORDER BY id ASC"),
+  postEntry: prep("INSERT INTO public.entries(text, date, \"userID\") VALUES (${text}, ${date}, ${userID})"),
+  getEntriesBetweenDates: prep("SELECT * FROM public.entries WHERE \"userID\" = ${userID} AND date BETWEEN ${startDate} AND ${endDate}"),
+  getEntryByDate: prep("SELECT * FROM public.entries WHERE  \"userID\" = ${userID} AND date = ${date}"),
+  deleteEntryByDate: prep("DELETE FROM public.entries WHERE \"userID\" = ${userID} AND date = ${date}")
 };
 
-const getAllEntries = (request, response) => {
-  pool.query(queries.getAll(), (error, results) => {
+const postEntry = (request, response) => {
+  const insertion = {
+    text: request.body.text,
+    date: request.body.date,
+    userID: request.body.userID
+  };
+  pool.query(queries.postEntry(insertion), (error, results) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+}
+
+const getAllUserEntries = (request, response) => {
+  pool.query(queries.getAllUserEntries({"userID": request.body.userID}), (error, results) => {
     if (error) {
       throw error;
     }
@@ -26,6 +44,50 @@ const getAllEntries = (request, response) => {
   });
 };
 
+const getEntryByDate = (request, response) => {
+  const insertion = {
+    date: request.body.date,
+    userID: request.body.userID
+  };
+  pool.query(queries.getEntryByDate(insertion), (error, results) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+}
+
+const getEntriesBetweenDates = (request, response) => {
+  const insertion = {
+    startDate: request.body.startDate,
+    endDate: request.body.endDate,
+    userID: request.body.userID
+  };
+  pool.query(queries.getEntriesBetweenDates(insertion), (error, results) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+}
+
+const deleteEntryByDate = (request, response) => {
+  const insertion = {
+    date: request.body.date,
+    userID: request.body.userID
+  };
+  pool.query(queries.deleteEntryByDate(insertion), (error, results) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+}
+
 module.exports = {
-  getAllEntries
+  getAllUserEntries,
+  postEntry,
+  getEntryByDate,
+  getEntriesBetweenDates,
+  deleteEntryByDate
 };
